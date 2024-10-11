@@ -18,10 +18,10 @@ status_code = pr.status_code
 print(f"{reason} {status_code}")
 
 if(reason == 'OK' and status_code == 200):
-	print("Paso")
+	print("Paso el ataque")
 	exit(1)
 else:
-	print("Fallo")
+	print("Fallo el ataque")
 	exit(0)
 
 

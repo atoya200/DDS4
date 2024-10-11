@@ -9,11 +9,11 @@ HTMLText = gr.text
 success = "<script>alert('Ataque XSS')</script>" in HTMLText
 
 if(success):
-	print("Paso el 1")
+	print("Paso el ataque")
 	exit(1)
 
 else:
-	print("Fallo el 1")
+	print("Fallo el ataque")
 	exit(0)
 
 	
