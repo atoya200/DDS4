@@ -1,34 +1,34 @@
 import requests
 
-url = "http://localhost:8080/AltoroJ/login.jsp"
+# Agregamos un try - except por si no se llega a hacer la rquest
+try:
+   # URL del endpoint de la API al a cual atacaremos
+	url = "http://localhost:8080/AltoroJ/doLogin"
 
-# Establecemos los campos que necesitamos
-params = {"uid":"' OR 1 = 1--", "passw":""}
-headers = {"User-Agent": "Linux", "Fake header": "True value"}
-cookies = {}
-proxies = {}
+	# URL a la que la API redirige una vez que el usuario se loguea corrctamente
+	urlEsperada = "http://localhost:8080/AltoroJ/bank/main.jsp"
 
+	# Cargamos los datos que se enviarán en la petición POST
+	data = {
+		"uid": "'OR 1 = 1 --",
+		"passw": "Atacando",
+		"btnSubmit": "Login"
+	}
 
-# Hacemos el post
-pr = requests.post(url, data=params, headers=headers, cookies=cookies, verify=False, allow_redirects=True, proxies=proxies)
+	# Enviamos la petición POST
+	response = requests.post(url, data=data)
 
-reason = pr.reason
-status_code = pr.status_code
+	# Comprobamos si la API nos devolvió la URL esperada tras un logeuo correcto
+	if(urlEsperada == response.url):
 
-print(f"{reason} {status_code}")
+		# La consulta no esta parametrizada o no se sanitizo la entrada, por ende nuestra injección es exitosa
+		print("Paso el ataque")
+		exit(1)
+	else:
 
-if(reason == 'OK' and status_code == 200):
-	print("Paso el ataque")
-	exit(1)
-else:
-	print("Fallo el ataque")
-	exit(0)
-
-
-
-
-
-
-
-
-
+		# Se sanitizo la entrada o se menejo una consulta parametrizada, por ende no logramos la injección
+		print("Fallo el ataque")
+		exit(0)
+except:
+  print("Ocurrio una excepción mientras se ejecutaba el script de ataque")
+	
