@@ -1,34 +1,41 @@
 import requests
+import traceback
 
-# Agregamos un try - except por si no se llega a hacer la rquest
 try:
-   # URL del endpoint de la API al a cual atacaremos
-	url = "http://localhost:8080/AltoroJ/doLogin"
+    # Leer la URL desde el archivo
+    url = "/AltoroJ/doLogin"
+    with open("ipLogin.txt") as my_file:
+        url = my_file.read().strip() + url  # Elimina espacios y saltos de línea
 
-	# URL a la que la API redirige una vez que el usuario se loguea corrctamente
-	urlEsperada = "http://localhost:8080/AltoroJ/bank/main.jsp"
+    # PATH a la que se espera redirigir después del login
+    pathEsperado = "AltoroJ/bank/main.jsp"
 
-	# Cargamos los datos que se enviarán en la petición POST
-	data = {
-		"uid": "'OR 1 = 1 --",
-		"passw": "Atacando",
-		"btnSubmit": "Login"
-	}
+    # Datos del formulario para la inyección SQL
+    data = {
+        "uid": "'OR 1 = 1 --",
+        "passw": "Atacando",
+        "btnSubmit": "Login"
+    }
 
-	# Enviamos la petición POST
-	response = requests.post(url, data=data)
+    # Envío de la petición POST
+    response = requests.post(url, data=data)
 
-	# Comprobamos si la API nos devolvió la URL esperada tras un logeuo correcto
-	if(urlEsperada == response.url):
+    # Verificar si hubo redirección a la URL esperada
+    urlResponse = response.url
 
-		# La consulta no esta parametrizada o no se sanitizo la entrada, por ende nuestra injección es exitosa
-		print("Paso el ataque")
-		exit(1)
-	else:
+    tmp = urlResponse.split("/")
+    tmp = tmp[3:]
+    pathRecibido = "/".join(tmp)
+    
+    print(f"Path recibido: {pathRecibido}")
+    
+    if pathEsperado == pathRecibido:
+        print("Paso el ataque")
+        exit(1)
+    else:
+        print("Fallo el ataque")
+        exit(0)
 
-		# Se sanitizo la entrada o se menejo una consulta parametrizada, por ende no logramos la injección
-		print("Fallo el ataque")
-		exit(0)
-except:
-  print("Ocurrio una excepción mientras se ejecutaba el script de ataque")
-	
+except Exception as e:
+    print("Ocurrió una excepción mientras se ejecutaba el script de ataque:")
+    traceback.print_exc()

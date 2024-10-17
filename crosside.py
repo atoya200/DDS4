@@ -1,23 +1,27 @@
 import requests
+import traceback
 
-# Hacemos una request y le colocamos la inyeccion en el param query
-gr = requests.get("http://localhost:8080/AltoroJ/search.jsp?query=<script>alert('Ataque XSS')</script>")
+try:
+    url = "/AltoroJ/search.jsp?query=<script>alert('Ataque XSS')</script>"
+    with open("ipCrosside.txt") as my_file:
+        url = my_file.read().strip() + url # Elimina espacios y saltos de línea
 
-# Recuperamos el texto de la respuesta
-HTMLText = gr.text
+    # Enviamos la petición GET con la inyección en el parámetro 'query'
+    gr = requests.get(url)
 
-# Comprobamos si el texto que nos devolvió Altoro con nuestra injección
-if("<script>alert('Ataque XSS')</script>" in HTMLText):
-	
-	# No se sanitizo la entrada, por lo cual nuestra injección fue un exito
-	print("Paso el ataque")
-	exit(1)
+    # Recuperamos el texto de la respuesta
+    HTMLText = gr.text
 
-else:
-	
-	# La entrada estaba sanitizada y por ende no fue exitoso nuestro ataque
-	print("Fallo el ataque")
-	exit(0)
-
-	
+    # Comprobamos si nuestra inyección aparece en la respuesta
+    if "<script>alert('Ataque XSS')</script>" in HTMLText:
+        # No se sanitizó la entrada, el ataque fue exitoso
+        print("Paso el ataque")
+        exit(1)
+    else:
+        # La entrada estaba sanitizada, el ataque falló
+        print("Fallo el ataque")
+        exit(0)
+except Exception as e:
+    print("Ocurrió una excepción mientras se ejecutaba el script de ataque:")
+    traceback.print_exc()
 
