@@ -21,7 +21,7 @@ try:
     response = requests.post(url, data=data)
 
     # Verificar si hubo redirección a la URL esperada
-    urlResponse = response.url
+    urlResponse = response.url 
 
     tmp = urlResponse.split("/")
     tmp = tmp[3:]

@@ -3,7 +3,7 @@ import traceback
 
 try:
     url = "/AltoroJ/search.jsp?query=<script>alert('Ataque XSS')</script>"
-    with open("ipCrosside.txt") as my_file:
+    with open("ipCrossSite.txt") as my_file:
         url = my_file.read().strip() + url # Elimina espacios y saltos de línea
 
     # Enviamos la petición GET con la inyección en el parámetro 'query'
